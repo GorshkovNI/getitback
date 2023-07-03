@@ -5,6 +5,9 @@ export class User {
     @PrimaryGeneratedColumn()
     id: number;
 
+    @Column()
+    name: string;
+
     @Column({ unique: true })
     email: string;
 
@@ -18,7 +21,7 @@ export class User {
     activation_link: string;
 
     @Column()
-    is_activated: string;
+    is_activated: boolean;
 
     @Column()
     phone_number: string;
