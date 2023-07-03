@@ -6,6 +6,8 @@
     "strict": false,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   }
 }
