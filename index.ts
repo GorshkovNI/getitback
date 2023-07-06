@@ -1,7 +1,10 @@
-import express, { Request, Response } from 'express';
-import {connectToDb} from "./server/db/db";
-import router from "./server/routes/user.routes";
+import express, { NextFunction, Request, Response } from 'express';
+import { connectToDb } from "./server/db/db";
+import userRouter from "./server/routes/user.routes";
 const pgp = require('pg-promise')();
+import cors from 'cors'
+import errorHandler, { ApiError } from "./server/middlewares/error-midlewares";
+require('dotenv').config();
 
 const PORT = 3000
 
@@ -13,7 +16,27 @@ app.get('/', (req: Request, res: Response) => {
 })
 
 app.use(express.json());
-app.use(router);
+
+app.use(cors({
+    origin: 'http://localhost:8080',
+    credentials: true,
+    exposedHeaders: ['set-cookie', 'Content-Length', 'X-Foo', 'X-Bar']
+}))
+
+app.use(userRouter);
+
+// Middleware для обработки ошибок
+app.use(
+    (err: Error | ApiError, req: Request, res: Response, next: NextFunction) => {
+        // Обработка ошибок, созданных с помощью ApiError
+        if (err instanceof ApiError) {
+            return res.status(err.status).json({ message: err.message, errors: err.errors });
+        }
+
+        // Обработка остальных ошибок
+        errorHandler(err, req, res, next);
+    }
+);
 
 connectToDb().then(() => {
     app.listen(PORT, () => {

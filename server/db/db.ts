@@ -9,7 +9,8 @@ export const connectToDb = async (): Promise<Connection> => {
         password: "123",
         database: "classified",
         entities: [
-            "entities/*.ts"
+            "server/entities/*.ts",
+            "server/entities/Token/Token.ts"
         ],
         synchronize: true,
     });
