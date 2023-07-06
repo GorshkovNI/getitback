@@ -37,7 +37,7 @@ export const UserService = {
             const isUser = await userRepository.findOne({where: {email: email}})
 
             if(isUser){
-                throw new ApiError(400, 'Такой юзер уже есть', ['Такой юзер уже есть']);
+                throw new ApiError(409, 'Такой юзер уже есть', ['Такой юзер уже есть']);
             }
 
             const user = new User();
