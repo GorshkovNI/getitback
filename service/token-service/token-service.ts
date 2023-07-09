@@ -3,7 +3,7 @@ import {Token} from "../../server/entities/Token/Token";
 import {getRepository, Repository} from "typeorm";
 
 export const TokenService = {
-    generationToken(payload: string) {
+    generationToken(payload: any) {
         const accessToken = jwt.sign({data: payload}, process.env.JWT_ACCESS_SECRET, {expiresIn: '30m'})
         const refreshToken = jwt.sign({data: payload}, process.env.JWT_REFRESH_SECRET, {expiresIn: '30d'})
 

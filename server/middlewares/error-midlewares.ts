@@ -9,6 +9,14 @@ export class ApiError extends Error {
         this.status = status;
         this.errors = errors;
     }
+
+    static UnautorizedErrors() {
+        return new ApiError(401, 'Пользователь не авторизован')
+    }
+
+    static BadRequest(message){
+        return new ApiError(400, message)
+    }
 }
 
 const errorHandler = (

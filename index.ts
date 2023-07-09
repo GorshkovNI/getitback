@@ -1,6 +1,7 @@
 import express, { NextFunction, Request, Response } from 'express';
 import { connectToDb } from "./server/db/db";
 import userRouter from "./server/routes/user.routes";
+import cookieParser from 'cookie-parser';
 const pgp = require('pg-promise')();
 import cors from 'cors'
 import errorHandler, { ApiError } from "./server/middlewares/error-midlewares";
@@ -16,7 +17,7 @@ app.get('/', (req: Request, res: Response) => {
 })
 
 app.use(express.json());
-
+app.use(cookieParser());
 app.use(cors({
     origin: 'http://localhost:8080',
     credentials: true,

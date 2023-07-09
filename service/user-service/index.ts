@@ -4,3 +4,8 @@ export interface IUserServiceRegistration{
     phone_number: string,
     password: string,
 }
+
+export interface IUserServiceLogin{
+    email: string,
+    password: string
+}

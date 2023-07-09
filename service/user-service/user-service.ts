@@ -1,4 +1,4 @@
-import {IUserServiceRegistration} from "./index";
+import {IUserServiceLogin, IUserServiceRegistration} from "./index";
 import {FindOneOptions, getRepository} from "typeorm";
 import bcrypt from 'bcrypt';
 import {User} from "../../server/entities/User";
@@ -6,26 +6,10 @@ import { v4 as uuidv4 } from 'uuid';
 import {MailService} from "../mail-service/mail-service";
 import {TokenService} from "../token-service/token-service";
 import errorMidlewares, {ApiError} from "../../server/middlewares/error-midlewares";
+import {JwtPayload} from "jsonwebtoken";
 
 
 export const UserService = {
-
-    async generateUniqueUserId() {
-        let userId = '';
-        let isUnique = false;
-        const userRepository = getRepository(User);
-
-        while (!isUnique) {
-            userId = uuidv4();
-            const existingUser = await userRepository.findOne({ where: { id: userId } });
-
-            if (!existingUser) {
-                isUnique = true;
-            }
-        }
-
-        return userId;
-    },
 
     async registration(userInfo: IUserServiceRegistration){
 
@@ -37,7 +21,7 @@ export const UserService = {
             const isUser = await userRepository.findOne({where: {email: email}})
 
             if(isUser){
-                throw new ApiError(409, 'Такой юзер уже есть', ['Такой юзер уже есть']);
+                throw new ApiError(409, 'exists', ['Такой юзер уже есть']);
             }
 
             const user = new User();
@@ -66,6 +50,7 @@ export const UserService = {
             const tokens = TokenService.generationToken(email)
             await TokenService.saveToken(user_id, tokens.refreshToken)
 
+
             return user
         }catch (e) {
             console.log(e)
@@ -75,5 +60,56 @@ export const UserService = {
 
         // await userRepository.save(user);
 
-    }
+    },
+
+    async login(userInfo: IUserServiceLogin){
+      try{
+          const userRepository = getRepository(User);
+          const {email, password} = userInfo
+          const user = await userRepository.findOne({where: {email: email}})
+          if(!user){
+              console.log("Пользователя нет")
+              throw ApiError.BadRequest(`Пользователя с ${email} не зарегистрирован`)
+          }
+
+          const isPassEqual = bcrypt.compare(password, user.password)
+          if(!isPassEqual){
+              throw ApiError.BadRequest('Неверный пароль')
+          }
+
+          const tokens = TokenService.generationToken(email)
+          await TokenService.saveToken(user.id, tokens.refreshToken)
+
+          return {...tokens, user:user}
+
+      }catch (e) {
+          throw e
+      }
+    },
+
+    async refresh(refreshToken){
+        try{
+            const userRepository = getRepository(User);
+            if(!refreshToken){
+                throw ApiError.UnautorizedErrors()
+            }
+            console.log('token')
+            const userData = TokenService.validateRefreshToken(refreshToken) as JwtPayload
+            const token = TokenService.findToken(refreshToken)
+
+            if(!token ||  !userData){ // !!token - потому что findToken вернет 0 или 1 (0 - нет токена в БД, 1 - токен существует)
+                throw ApiError.UnautorizedErrors()
+            }
+
+            console.log("userData: ", userData.data)
+            console.log("token: ", token)
+            const user = await userRepository.findOne({where: {email: userData.data}});
+            const tokens = TokenService.generationToken({userData})
+            await TokenService.saveToken(user.id, tokens.refreshToken)
+            return {...tokens, user: user}
+        }catch (e){
+            throw e
+        }
+
+    },
 }
