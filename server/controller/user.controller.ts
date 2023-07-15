@@ -1,6 +1,7 @@
 import {NextFunction, Request, Response} from 'express';
 import {UserService} from "../../service/user-service/user-service";
 import {ApiError} from "../middlewares/error-midlewares";
+import {User} from "../entities/User";
 
 export const UserController = {
     async createUser(req: Request, res: Response, next: NextFunction) {
@@ -51,6 +52,19 @@ export const UserController = {
             next(e)
         }
     },
+
+    async logout(req: Request, res: Response, next: NextFunction){
+        try{
+            const {refreshToken} = req.cookies
+            const token = await UserService.logout(refreshToken)
+            res.clearCookie('refreshToken')
+            return res.json(token)
+
+        }catch (e){
+            console.log('Ошибка в logout')
+            next(e)
+        }
+    }
 
 };
 

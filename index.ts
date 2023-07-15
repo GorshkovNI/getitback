@@ -1,13 +1,15 @@
 import express, { NextFunction, Request, Response } from 'express';
 import { connectToDb } from "./server/db/db";
 import userRouter from "./server/routes/user.routes";
+import categoryRouter from "./server/routes/category.routes";
 import cookieParser from 'cookie-parser';
 const pgp = require('pg-promise')();
 import cors from 'cors'
 import errorHandler, { ApiError } from "./server/middlewares/error-midlewares";
+import categoryRoutes from "./server/routes/category.routes";
 require('dotenv').config();
 
-const PORT = 3000
+const PORT = 3001
 
 const app = express();
 
@@ -25,6 +27,7 @@ app.use(cors({
 }))
 
 app.use(userRouter);
+app.use('/category', categoryRouter);
 
 // Middleware для обработки ошибок
 app.use(

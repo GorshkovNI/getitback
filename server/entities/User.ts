@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import {Entity, PrimaryGeneratedColumn, Column, OneToMany} from 'typeorm';
+import {Ad} from "./Ad/Ads";
 
 @Entity('users')
 export class User {
@@ -23,5 +24,7 @@ export class User {
     @Column()
     is_activated: boolean;
 
+    @OneToMany(() => Ad, (post) => post.user)
+    posts: Ad[];
 
 }

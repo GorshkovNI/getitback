@@ -10,7 +10,10 @@ export const connectToDb = async (): Promise<Connection> => {
         database: "classified",
         entities: [
             "server/entities/*.ts",
-            "server/entities/Token/Token.ts"
+            "server/entities/**/*.ts",
+            // "server/entities/Token/Token.ts",
+            // "server/entities/Ad/Ads.ts",
+            // "server/entities/Photo/Photos.ts"
         ],
         synchronize: true,
     });

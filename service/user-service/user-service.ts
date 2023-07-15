@@ -69,12 +69,12 @@ export const UserService = {
           const user = await userRepository.findOne({where: {email: email}})
           if(!user){
               console.log("Пользователя нет")
-              throw ApiError.BadRequest(`Пользователя с ${email} не зарегистрирован`)
+              throw ApiError.BadRequest(`notExists`)
           }
 
           const isPassEqual = bcrypt.compare(password, user.password)
           if(!isPassEqual){
-              throw ApiError.BadRequest('Неверный пароль')
+              throw ApiError.BadRequest('notExists')
           }
 
           const tokens = TokenService.generationToken(email)
@@ -112,4 +112,13 @@ export const UserService = {
         }
 
     },
+    
+    async logout(refreshToken){
+        try{
+            const token = await TokenService.removeToken(refreshToken)
+            return token
+        }catch (e) {
+            throw e
+        }
+    }
 }
