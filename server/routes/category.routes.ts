@@ -8,5 +8,6 @@ router.post('/categories', CategoryController.createCategory);
 router.post('/subcategories', CategoryController.createSubcategory);
 router.post('/custom-field', CategoryController.createCustomField);
 router.get('/getCategory', CategoryController.getCategory);
+router.post('/getField', CategoryController.getField);
 
 export default router;

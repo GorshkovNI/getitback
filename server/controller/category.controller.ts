@@ -105,9 +105,14 @@ export class CategoryController {
                                 children: await buildCategoryTree(children, categoryRepository),
                             };
                         } else {
+                            const subcategory = await categoryRepository.findOne({
+                                where: { id: category.id },
+                                relations: ['customFields']
+                            });
                             return {
                                 id: category.id,
                                 name: category.name,
+                                customFields: subcategory.customFields
                             };
                         }
                     })
@@ -125,6 +130,33 @@ export class CategoryController {
             const categoryTree = await buildCategoryTree(parentCategory, categoryRepository);
             console.log(categoryTree)
             return res.send(categoryTree)
+        }catch (e){
+            next(e)
+        }
+    }
+
+    static getField = async (req: Request, res: Response, next: NextFunction) => {
+        try{
+
+            const {id} = req.body
+            console.log(id)
+            //const categoryRepository = getRepository(CustomField)
+
+            // const parentCategory = await categoryRepository
+            //     .createQueryBuilder('custom_field')
+            //     .leftJoinAndSelect('category.parent', 'parent')
+            //     .where(`parent.id = ${id}`)
+            //     .getMany();
+
+            //const parentCategory = await categoryRepository.find({ where: { category: id } });
+            //console.log(parentCategory)
+
+            const categoryRepository = getRepository(Category);
+            const category = await categoryRepository.findOne({
+                where: { id: id },
+                relations: ['customFields']
+            });
+            return res.send(category)
         }catch (e){
             next(e)
         }
