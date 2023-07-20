@@ -1,7 +1,6 @@
-import { createConnection, Connection } from 'typeorm';
+import {createConnection, Connection, DataSource} from 'typeorm';
 
-export const connectToDb = async (): Promise<Connection> => {
-    const connection = await createConnection({
+    export const AppDataSource =  new DataSource({
         type: "postgres",
         host: "localhost",
         port: 5432,
@@ -17,6 +16,3 @@ export const connectToDb = async (): Promise<Connection> => {
         ],
         synchronize: true,
     });
-
-    return connection;
-};

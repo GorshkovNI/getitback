@@ -7,6 +7,7 @@ import {MailService} from "../mail-service/mail-service";
 import {TokenService} from "../token-service/token-service";
 import errorMidlewares, {ApiError} from "../../server/middlewares/error-midlewares";
 import {JwtPayload} from "jsonwebtoken";
+import {AppDataSource} from "../../server/db/db";
 
 
 export const UserService = {
@@ -14,7 +15,7 @@ export const UserService = {
     async registration(userInfo: IUserServiceRegistration){
 
         try{
-            const userRepository = getRepository(User);
+            const userRepository = AppDataSource.getRepository(User);
 
             const { name, email, phone_number, password  } = userInfo;
 
@@ -64,7 +65,7 @@ export const UserService = {
 
     async login(userInfo: IUserServiceLogin){
       try{
-          const userRepository = getRepository(User);
+          const userRepository = AppDataSource.getRepository(User);
           const {email, password} = userInfo
           const user = await userRepository.findOne({where: {email: email}})
           if(!user){
@@ -89,7 +90,7 @@ export const UserService = {
 
     async refresh(refreshToken){
         try{
-            const userRepository = getRepository(User);
+            const userRepository = AppDataSource.getRepository(User);
             if(!refreshToken){
                 throw ApiError.UnautorizedErrors()
             }

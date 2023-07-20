@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken'
 import {Token} from "../../server/entities/Token/Token";
 import {getRepository, Repository} from "typeorm";
+import {AppDataSource} from "../../server/db/db";
 
 export const TokenService = {
     generationToken(payload: any) {
@@ -32,7 +33,7 @@ export const TokenService = {
     },
 
     async saveToken(userId: string, refreshToken: string) {
-        const tokenRepository: Repository<Token> = getRepository(Token);
+        const tokenRepository: Repository<Token> = AppDataSource.getRepository(Token);
         const tokenData = await tokenRepository.findOne({ where: { user_id: userId, refreshToken } });
         if (tokenData) {
             tokenData.refreshToken = refreshToken;
@@ -43,13 +44,13 @@ export const TokenService = {
     },
 
     async removeToken(refreshToken: string) {
-        const tokenRepository: Repository<Token> = getRepository(Token);
+        const tokenRepository: Repository<Token> = AppDataSource.getRepository(Token);
         const tokenData = await tokenRepository.delete({ refreshToken });
         return tokenData;
     },
 
     async findToken(refreshToken: string) {
-        const tokenRepository: Repository<Token> = getRepository(Token);
+        const tokenRepository: Repository<Token> = AppDataSource.getRepository(Token);
         const token = await tokenRepository.findOne({ where: { refreshToken } });
         return token;
     }

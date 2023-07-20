@@ -21,19 +21,19 @@ export class Ad {
     @Column()
     title: string;
 
-    @Column()
+    @Column({default: ''})
     description: string;
 
     @Column()
     price: number;
 
-    @Column()
+    @Column({default: ''})
     photo: string;
 
     @Column()
     city: string;
 
-    @Column()
+    @Column({default: false})
     up: boolean;
 
     @ManyToOne(() => User, (user) => user.posts)
@@ -45,7 +45,12 @@ export class Ad {
     @OneToMany(() => Photo, photo => photo.ad)
     photos: Photo[];
 
-    @OneToMany(() => AdCustomField, (adCustomField) => adCustomField.ad)
+    // @OneToMany(() => AdCustomField, (adCustomField) => adCustomField.ad)
+    // customFields: AdCustomField[];
+
+    @OneToMany(() => AdCustomField, fieldValue => fieldValue.ad, {
+        cascade: true
+    })
     customFields: AdCustomField[];
 
     @CreateDateColumn()

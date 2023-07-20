@@ -3,6 +3,7 @@ import {Equal, getRepository, IsNull, Not, Repository} from "typeorm";
 import {Category} from "../entities/Category";
 import {CustomField} from "../entities/CustomField";
 import {as} from "pg-promise";
+import {AppDataSource} from "../db/db";
 
 
 export class CategoryController {
@@ -12,7 +13,7 @@ export class CategoryController {
         try{
             const categoryName = req.body.name;
             console.log(categoryName)
-            const categoryRepository = getRepository(Category);
+            const categoryRepository = AppDataSource.getRepository(Category);
 
             // Проверяем, существует ли уже категория с таким именем
             const categoryExists = await categoryRepository.findOne({where:{name: categoryName}});
@@ -37,7 +38,7 @@ export class CategoryController {
     static createSubcategory = async (req: Request, res: Response) => {
         const subcategoryName = req.body.name;
         const parentCategoryName = req.body.parent;
-        const categoryRepository = getRepository(Category);
+        const categoryRepository = AppDataSource.getRepository(Category);
 
         // Находим родительскую категорию
         const parentCategory = await categoryRepository.findOne({where:{name: parentCategoryName}});
@@ -65,9 +66,9 @@ export class CategoryController {
 
     static createCustomField = async (req: Request, res: Response, next: NextFunction) => {
         try{
-            const {name, fieldType, categoryName} = req.body
-            const customFieldRepository = getRepository(CustomField)
-            const categoryRepository = getRepository(Category)
+            const {name, fieldType, categoryName, options} = req.body
+            const customFieldRepository = AppDataSource.getRepository(CustomField)
+            const categoryRepository = AppDataSource.getRepository(Category)
 
             const category = await categoryRepository.findOne({where: {name: categoryName}})
 
@@ -78,7 +79,8 @@ export class CategoryController {
             const newCustomCategory = customFieldRepository.create({
                 name,
                 fieldType,
-                category
+                category,
+                options
             })
             const results = await customFieldRepository.save(newCustomCategory)
             return res.send(results)
@@ -119,7 +121,7 @@ export class CategoryController {
                 );
             }
 
-            const categoryRepository = getRepository(Category)
+            const categoryRepository = AppDataSource.getRepository(Category)
 
             const parentCategory = await categoryRepository
                 .createQueryBuilder('category')
@@ -151,7 +153,7 @@ export class CategoryController {
             //const parentCategory = await categoryRepository.find({ where: { category: id } });
             //console.log(parentCategory)
 
-            const categoryRepository = getRepository(Category);
+            const categoryRepository = AppDataSource.getRepository(Category);
             const category = await categoryRepository.findOne({
                 where: { id: id },
                 relations: ['customFields']

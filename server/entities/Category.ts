@@ -33,6 +33,6 @@ export class Category {
     @OneToMany(() => Ad, (post) => post.category)
     posts: Ad[];
 
-    @OneToMany(() => CustomField, (customField) => customField.category)
+    @OneToMany(() => CustomField, customField => customField.category)
     customFields: CustomField[];
 }

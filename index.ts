@@ -1,7 +1,8 @@
 import express, { NextFunction, Request, Response } from 'express';
-import { connectToDb } from "./server/db/db";
+import {AppDataSource} from "./server/db/db";
 import userRouter from "./server/routes/user.routes";
 import categoryRouter from "./server/routes/category.routes";
+import adRouter from "./server/routes/ad.router"
 import cookieParser from 'cookie-parser';
 const pgp = require('pg-promise')();
 import cors from 'cors'
@@ -28,6 +29,7 @@ app.use(cors({
 
 app.use(userRouter);
 app.use('/category', categoryRouter);
+app.use(adRouter)
 
 // Middleware для обработки ошибок
 app.use(
@@ -42,8 +44,16 @@ app.use(
     }
 );
 
-connectToDb().then(() => {
-    app.listen(PORT, () => {
-        console.log(`Server started on http://localhost:${PORT}`);
-    });
-}).catch(error => console.log(error));
+// connectToDb().then(() => {
+//     app.listen(PORT, () => {
+//         console.log(`Server started on http://localhost:${PORT}`);
+//     });
+// }).catch(error => console.log(error));
+
+AppDataSource.initialize()
+    .then(() => {
+        app.listen(PORT, () => {
+         console.log(`Server started on http://localhost:${PORT}`);
+     });
+    })
+    .catch(error => console.log(error))
