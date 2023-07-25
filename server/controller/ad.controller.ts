@@ -50,6 +50,7 @@ export class AdController {
             }
 
             await adRepo.save(ad);
+            return res.send('Создно')
 
         }catch (e){
             console.log(e)
